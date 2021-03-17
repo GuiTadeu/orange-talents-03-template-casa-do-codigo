@@ -1,6 +1,8 @@
 package com.orange.bookstore.author;
 
-import java.time.LocalDateTime;	
+import java.time.LocalDateTime;
+
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -21,6 +23,7 @@ public class Author {
 	
 	@Email
 	@NotEmpty
+	@Column(unique=true)
 	private String email;
 	
 	@NotEmpty
@@ -28,6 +31,9 @@ public class Author {
 	private String description;
 	
 	private LocalDateTime createdAt = LocalDateTime.now();
+	
+	@Deprecated
+	public Author() {}
 	
 	public Author(@NotEmpty String name, @Email @NotEmpty String email, @NotEmpty @Size(max=400) String description) {
 		this.name = name;

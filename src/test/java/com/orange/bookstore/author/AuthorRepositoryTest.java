@@ -44,5 +44,23 @@ class AuthorRepositoryTest {
 		
 		assertThat(authorRepository.findById(savedAuthorId)).isEmpty();
 	}
-
+	
+	@Test
+	void findByEmail__should_return_author() {
+		Author author = new Author("Edgar Allan Poe", "edgar@gmail.com", "Autor, poeta, editor");
+		
+		authorRepository.save(author);
+		Optional<Author> retrievedAuthor = authorRepository.findByEmail("edgar@gmail.com");
+		
+		assertThat(retrievedAuthor).isNotEmpty();
+		assertThat(retrievedAuthor.get().getName()).isEqualTo("Edgar Allan Poe");
+		assertThat(retrievedAuthor.get().getEmail()).isEqualTo("edgar@gmail.com");
+		assertThat(retrievedAuthor.get().getDescription()).isEqualTo("Autor, poeta, editor");
+	}
+	
+	@Test
+	void findByEmail__should_not_return_author() {
+		Optional<Author> retrievedAuthor = authorRepository.findByEmail("cthulhu2077@gmail.com");
+		assertThat(retrievedAuthor).isEmpty();
+	}
 }
