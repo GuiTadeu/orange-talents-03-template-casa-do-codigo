@@ -1,4 +1,4 @@
-package com.orange.bookstore.config;
+package com.orange.bookstore.share;
 
 import static java.util.stream.Collectors.toMap;
 
@@ -9,7 +9,7 @@ import org.springframework.validation.FieldError;
 
 public class FieldErrorsExtractor {
 	
-	private Map<String, String> fieldErrors = new HashMap<>();
+	private Map<String, String> fieldErrors;
 	
 	public FieldErrorsExtractor(List<FieldError> errors) {
 		this.fieldErrors = errors.stream().collect(toMap(FieldError::getField, FieldError::getDefaultMessage));
