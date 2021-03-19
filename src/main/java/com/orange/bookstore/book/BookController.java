@@ -1,0 +1,47 @@
+package com.orange.bookstore.book;
+
+import com.orange.bookstore.author.Author;
+import com.orange.bookstore.author.AuthorRepository;
+import com.orange.bookstore.category.Category;
+import com.orange.bookstore.category.CategoryRepository;
+import com.orange.bookstore.share.FieldErrorsExtractor;
+import io.swagger.annotations.Api;
+import org.springframework.http.ResponseEntity;
+import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+import javax.validation.Valid;
+
+@Api
+@RestController
+@RequestMapping("/books")
+public class BookController {
+
+    private final BookRepository bookRepository;
+    private final CategoryRepository categoryRepository;
+    private final AuthorRepository authorRepository;
+
+    public BookController(BookRepository bookRepository, CategoryRepository categoryRepository, AuthorRepository authorRepository) {
+        this.bookRepository = bookRepository;
+        this.categoryRepository = categoryRepository;
+        this.authorRepository = authorRepository;
+    }
+
+    @PostMapping
+    public ResponseEntity create(@Valid @RequestBody BookForm form, BindingResult result) {
+
+        if (result.hasErrors())
+            return ResponseEntity.badRequest().body(new FieldErrorsExtractor(result.getFieldErrors()));
+
+        Category category = categoryRepository.getOne(form.getCategoryId());
+        Author author = authorRepository.getOne(form.getAuthorId());
+
+        Book book = form.toModel(category, author);
+        bookRepository.save(book);
+
+        return ResponseEntity.ok().build();
+    }
+}

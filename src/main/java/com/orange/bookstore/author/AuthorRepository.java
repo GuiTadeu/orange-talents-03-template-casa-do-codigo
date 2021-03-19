@@ -1,10 +1,10 @@
 package com.orange.bookstore.author;
 
+import org.springframework.data.jpa.repository.JpaRepository;
+
 import java.util.Optional;
 
-import org.springframework.data.repository.CrudRepository;
-
-public interface AuthorRepository extends CrudRepository<Author, Long> {
+public interface AuthorRepository extends JpaRepository<Author, Long> {
 
 	Optional<Author> findByEmail(String email);
 	

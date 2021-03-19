@@ -1,9 +1,10 @@
 package com.orange.bookstore.category;
 
-import java.util.Optional;
-import org.springframework.data.repository.CrudRepository;
+import org.springframework.data.jpa.repository.JpaRepository;
 
-public interface CategoryRepository extends CrudRepository<Category, Long> {
+import java.util.Optional;
+
+public interface CategoryRepository extends JpaRepository<Category, Long> {
 	
 	Optional<Category> findByName(String name);
 
