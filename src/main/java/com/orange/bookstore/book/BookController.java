@@ -12,6 +12,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import javax.validation.Valid;
+import java.util.Optional;
 
 @Api
 @RestController
@@ -26,6 +27,18 @@ public class BookController {
         this.bookRepository = bookRepository;
         this.categoryRepository = categoryRepository;
         this.authorRepository = authorRepository;
+    }
+
+    @GetMapping("/{id}/details")
+    public ResponseEntity details(@PathVariable Long id) {
+        Optional<Book> possibleBook = bookRepository.findById(id);
+
+        if(possibleBook.isPresent()) {
+            BookDetailsDTO detailsDTO = new BookDetailsDTO(possibleBook.get());
+            return ResponseEntity.ok(detailsDTO);
+        }
+
+        return ResponseEntity.notFound().build();
     }
 
     @GetMapping("/listAll")

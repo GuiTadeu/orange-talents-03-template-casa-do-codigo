@@ -21,6 +21,8 @@ import java.net.URI;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+
 @SpringBootTest
 @AutoConfigureMockMvc
 @RunWith(SpringRunner.class)
@@ -108,8 +110,7 @@ class BookControllerTest {
             .andExpect(MockMvcResultMatchers
                 .status()
                 .is(200))
-            .andExpect(MockMvcResultMatchers
-                .jsonPath("$.numberOfElements").value("0"));
+            .andExpect(jsonPath("$.numberOfElements").value("0"));
     }
 
     @Test
@@ -135,8 +136,50 @@ class BookControllerTest {
             .andExpect(MockMvcResultMatchers
                 .status()
                 .is(200))
+            .andExpect(jsonPath("$.numberOfElements").value("2"));
+    }
+
+    @Test
+    @Transactional
+    public void details__should_not_return_book_details_and_return_status_404_notFound() throws Exception {
+        URI uri = new URI(String.format("/books/%s/details", 0L));
+
+        mockMvc
+            .perform(MockMvcRequestBuilders
+                .get(uri)
+                .contentType(MediaType.APPLICATION_JSON))
             .andExpect(MockMvcResultMatchers
-                .jsonPath("$.numberOfElements").value("2"));
+                .status()
+                .is(404));
+    }
+
+    @Test
+    @Transactional
+    public void details__should_return_book_details_and_status_200() throws Exception {
+        Book book = new Book("Dom Quixote", "Cavaleiro da Triste Figura",
+                "1. Dois; 3. Quatro", new BigDecimal("250.50"), 100,
+                "8595200858", LocalDate.now().plusDays(10), category, author);
+
+        manager.persist(book);
+
+        URI uri = new URI(String.format("/books/%s/details", book.getId()));
+
+        mockMvc
+            .perform(MockMvcRequestBuilders
+                .get(uri)
+                .contentType(MediaType.APPLICATION_JSON))
+            .andExpect(MockMvcResultMatchers
+                .status()
+                .is(200))
+            .andExpect(jsonPath("$.title").value("Dom Quixote"))
+            .andExpect(jsonPath("$.resume").value("Cavaleiro da Triste Figura"))
+            .andExpect(jsonPath("$.summary").value("1. Dois; 3. Quatro"))
+            .andExpect(jsonPath("$.numberOfPages").value(100))
+            .andExpect(jsonPath("$.isbn").value("8595200858"))
+            .andExpect(jsonPath("$.categoryName").value(category.getName()))
+            .andExpect(jsonPath("$.authorName").value(author.getName()))
+            .andExpect(jsonPath("$.authorDescription").value(author.getDescription()));
+
     }
 
 }
