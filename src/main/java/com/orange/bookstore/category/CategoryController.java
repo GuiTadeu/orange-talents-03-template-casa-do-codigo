@@ -1,9 +1,7 @@
 package com.orange.bookstore.category;
 
-import com.orange.bookstore.share.FieldErrorsExtractor;
 import io.swagger.annotations.Api;
 import org.springframework.http.ResponseEntity;
-import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -23,11 +21,7 @@ public class CategoryController {
     }
 
     @PostMapping
-    public ResponseEntity create(@Valid @RequestBody CategoryForm form, BindingResult result) {
-
-        if (result.hasErrors())
-            return ResponseEntity.badRequest().body(new FieldErrorsExtractor(result.getFieldErrors()));
-
+    public ResponseEntity create(@Valid @RequestBody CategoryForm form) {
         Category category = form.toModel();
         categoryRepository.save(category);
 

@@ -1,4 +1,4 @@
-package com.orange.bookstore.author;
+package com.orange.bookstore.country;
 
 import io.swagger.annotations.Api;
 import org.springframework.http.ResponseEntity;
@@ -11,22 +11,20 @@ import javax.validation.Valid;
 
 @Api
 @RestController
-@RequestMapping("/authors")
-public class AuthorController {
+@RequestMapping("/countries")
+public class CountryController {
 
-    private final AuthorRepository authorRepository;
+    private final CountryRepository countryRepository;
 
-    public AuthorController(AuthorRepository authorRepository) {
-        this.authorRepository = authorRepository;
+    public CountryController(CountryRepository countryRepository) {
+        this.countryRepository = countryRepository;
     }
 
     @PostMapping
-    public ResponseEntity create(@Valid @RequestBody AuthorForm form) {
-
-        Author author = form.toModel();
-        authorRepository.save(author);
+    public ResponseEntity create(@Valid @RequestBody CountryForm form) {
+        Country country = form.toModel();
+        countryRepository.save(country);
 
         return ResponseEntity.ok().build();
     }
-
 }

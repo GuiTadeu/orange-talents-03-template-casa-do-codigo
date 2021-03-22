@@ -4,12 +4,10 @@ import com.orange.bookstore.author.Author;
 import com.orange.bookstore.author.AuthorRepository;
 import com.orange.bookstore.category.Category;
 import com.orange.bookstore.category.CategoryRepository;
-import com.orange.bookstore.share.FieldErrorsExtractor;
 import io.swagger.annotations.Api;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
-import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import javax.validation.Valid;
 import java.util.Optional;
@@ -48,11 +46,7 @@ public class BookController {
     }
 
     @PostMapping
-    public ResponseEntity create(@Valid @RequestBody BookForm form, BindingResult result) {
-
-        if (result.hasErrors())
-            return ResponseEntity.badRequest().body(new FieldErrorsExtractor(result.getFieldErrors()));
-
+    public ResponseEntity create(@Valid @RequestBody BookForm form) {
         Category category = categoryRepository.getOne(form.getCategoryId());
         Author author = authorRepository.getOne(form.getAuthorId());
 
