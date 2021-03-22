@@ -2,6 +2,7 @@ package com.orange.bookstore.book;
 
 import com.orange.bookstore.author.Author;
 import com.orange.bookstore.category.Category;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,6 +16,7 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
 import javax.persistence.EntityManager;
 import javax.transaction.Transactional;
+import java.math.BigDecimal;
 import java.net.URI;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
@@ -30,16 +32,22 @@ class BookControllerTest {
     @Autowired
     private EntityManager manager;
 
-    @Test
-    @Transactional
-    public void create__should_save_book_and_return_status_200_ok() throws Exception {
+    private Category category;
+    private Author author;
 
-        Category category = new Category("Fantasia");
-        Author author = new Author("Cervantes", "cervantes@gmail.com", "Romancista, dramaturgo e poeta");
+    @BeforeEach
+    private void setup() {
+        this.category = new Category("Fantasia");
+        this.author = new Author("Cervantes", "cervantes@gmail.com", "Romancista, dramaturgo e poeta");
 
         manager.persist(category);
         manager.persist(author);
+    }
 
+
+    @Test
+    @Transactional
+    public void create__should_save_book_and_return_status_200_ok() throws Exception {
         URI uri = new URI("/books");
         String tenDaysLater = LocalDate.now().plusDays(10).format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
 
@@ -64,6 +72,7 @@ class BookControllerTest {
     }
 
     @Test
+    @Transactional
     public void create__should_not_save_book_and_return_status_400_badRequest() throws Exception {
         URI uri = new URI("/books");
 
@@ -85,6 +94,49 @@ class BookControllerTest {
             .andExpect(MockMvcResultMatchers
                 .status()
                 .is(400));
+    }
+
+    @Test
+    @Transactional
+    public void listAll__should_return_numberOfElements_0_and_return_status_200_ok() throws Exception {
+        URI uri = new URI("/books/listAll");
+
+        mockMvc
+            .perform(MockMvcRequestBuilders
+                .get(uri)
+                .contentType(MediaType.APPLICATION_JSON))
+            .andExpect(MockMvcResultMatchers
+                .status()
+                .is(200))
+            .andExpect(MockMvcResultMatchers
+                .jsonPath("$.numberOfElements").value("0"));
+    }
+
+    @Test
+    @Transactional
+    public void listAll__should_return_numberOfElements_2_and_return_status_200_ok() throws Exception {
+        URI uri = new URI("/books/listAll");
+
+        Book firstBook = new Book("Dom Quixote", "Cavaleiro da Triste Figura",
+                "1. Dois; 3. Quatro", new BigDecimal("250.50"), 100,
+                "8595200858", LocalDate.now().plusDays(10), category, author);
+
+        Book secondBook = new Book("Sancho Pança", "O Governador",
+                "1. Dois; 3. Quatro", new BigDecimal("250.50"), 100,
+                "8292220252", LocalDate.now().plusDays(15), category, author);
+
+        manager.persist(firstBook);
+        manager.persist(secondBook);
+
+        mockMvc
+            .perform(MockMvcRequestBuilders
+                .get(uri)
+                .contentType(MediaType.APPLICATION_JSON))
+            .andExpect(MockMvcResultMatchers
+                .status()
+                .is(200))
+            .andExpect(MockMvcResultMatchers
+                .jsonPath("$.numberOfElements").value("2"));
     }
 
 }

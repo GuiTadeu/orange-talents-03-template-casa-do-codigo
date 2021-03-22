@@ -6,13 +6,11 @@ import com.orange.bookstore.category.Category;
 import com.orange.bookstore.category.CategoryRepository;
 import com.orange.bookstore.share.FieldErrorsExtractor;
 import io.swagger.annotations.Api;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
-
+import org.springframework.web.bind.annotation.*;
 import javax.validation.Valid;
 
 @Api
@@ -28,6 +26,12 @@ public class BookController {
         this.bookRepository = bookRepository;
         this.categoryRepository = categoryRepository;
         this.authorRepository = authorRepository;
+    }
+
+    @GetMapping("/listAll")
+    public ResponseEntity listAll(Pageable pageable) {
+        Page<Book> page = bookRepository.findAll(pageable);
+        return ResponseEntity.ok(page);
     }
 
     @PostMapping
