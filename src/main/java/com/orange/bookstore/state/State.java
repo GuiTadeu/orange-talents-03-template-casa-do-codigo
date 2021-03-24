@@ -25,6 +25,8 @@ public class State {
         this.country = country;
     }
 
+    public State() {}
+
     public Long getId() {
         return id;
     }
